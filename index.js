@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
             };
 
             // URL endpoint backend
-            const target_url = "https://asia-southeast2-pdfulbi.cloudfunctions.net/pdfmerger/pdfm/register";
+            const target_url = "https://asia-southeast2-pdfulbi.cloudfunctions.net/pdfmerger/pdfm/users";
 
             // Tampilkan spinner loading (opsional)
             document.getElementById("loading-spinner").style.display = "block";
