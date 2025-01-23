@@ -1,100 +1,78 @@
-// Import fungsi postJSON
-// import { postJSON } from 'https://cdn.jsdelivr.net/gh/jscroot/lib@0.2.0/api.js';
-
 document.addEventListener("DOMContentLoaded", function () {
     const registerButton = document.getElementById("registerButton");
 
     registerButton.addEventListener("click", async function (event) {
         event.preventDefault();
 
+        // Ambil nilai input
         const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
 
-        // Basic validation
+        // Validasi sederhana
         if (!name || !email || !password) {
             alert("Silakan isi semua kolom.");
             return;
         }
 
-        if (password !== confirmPassword) {
-            alert("Kata sandi dan konfirmasi kata sandi tidak cocok.");
+        // Cek format email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Email tidak valid.");
             return;
         }
 
-        // Cek nama unik di backend
+        // Data yang akan dikirim ke backend
+        const data = {
+            name: name,
+            email: email,
+            password: password,
+        };
+
         try {
-            const checkUrl = `https://asia-southeast2-pdfulbi.cloudfunctions.net/pdfmerger/pdfm/get/users?name=${encodeURIComponent(name)}`;
-            const checkResponse = await fetch(checkUrl);
-
-            if (!checkResponse.ok) {
-                throw new Error("Gagal memeriksa ketersediaan nama.");
-            }
-
-            const checkData = await checkResponse.json();
-
-            if (checkData.exists) {
-                alert("Nama sudah digunakan. Silakan gunakan nama lain.");
-                return;
-            }
-
-            // Prepare data for registration
-            const data = {
-                name: name,
-                email: email,
-                password: password,
-            };
-
             // URL endpoint backend
-            const target_url = "https://asia-southeast2-pdfulbi.cloudfunctions.net/pdfmerger/pdfm/register";
-
-            // Tampilkan spinner loading (opsional)
-            document.getElementById("loading-spinner").style.display = "block";
+            const targetUrl = "https://asia-southeast2-pdfulbi.cloudfunctions.net/pdfmerger/pdfm/register";
 
             // Kirim data ke backend
-            const response = await postJSON(
-                target_url,
-                "Content-Type",
-                "application/json",
-                data
-            );
+            const response = await fetch(targetUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
 
-            // Sembunyikan spinner loading
-            document.getElementById("loading-spinner").style.display = "none";
+            // Periksa status respons
+            if (response.ok) {
+                const result = await response.json();
+                alert(result.message || "Registrasi berhasil!");
 
-            if (response.status >= 200 && response.status < 300) {
-                alert("Registration successful!");
-                // Reset form setelah berhasil
+                // Reset form setelah sukses
                 document.getElementById("name").value = "";
                 document.getElementById("email").value = "";
                 document.getElementById("password").value = "";
+
+                // Redirect ke halaman login
+                window.location.href = "https://pdfmulbi.github.io/login";
             } else {
-                alert("Error: " + response.data.message);
+                const errorData = await response.json();
+                alert(errorData.message || "Gagal melakukan registrasi. Silakan coba lagi.");
             }
         } catch (error) {
             console.error("Error during registration:", error);
             alert("Terjadi kesalahan saat melakukan registrasi. Silakan coba lagi.");
-            document.getElementById("loading-spinner").style.display = "none";
         }
     });
-});
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Select elements
-    const passwordInput = document.getElementById('password');
-    const togglePasswordButton = document.getElementById('togglePassword');
-    const toggleIcon = togglePasswordButton.querySelector('i');
+    // Password visibility toggle
+    const passwordInput = document.getElementById("password");
+    const togglePasswordButton = document.getElementById("togglePassword");
+    const toggleIcon = togglePasswordButton.querySelector("i");
 
-    // Add event listener to the toggle button
-    togglePasswordButton.addEventListener('click', () => {
-        // Check current state
-        const isPasswordVisible = passwordInput.type === 'text';
-
-        // Toggle password visibility
-        passwordInput.type = isPasswordVisible ? 'password' : 'text';
-
-        // Toggle the icon
-        toggleIcon.classList.toggle('fa-eye', !isPasswordVisible);
-        toggleIcon.classList.toggle('fa-eye-slash', isPasswordVisible);
+    togglePasswordButton.addEventListener("click", () => {
+        const isPasswordVisible = passwordInput.type === "text";
+        passwordInput.type = isPasswordVisible ? "password" : "text";
+        toggleIcon.classList.toggle("fa-eye-slash", isPasswordVisible);
+        toggleIcon.classList.toggle("fa-eye", !isPasswordVisible);
     });
 });
