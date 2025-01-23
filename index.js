@@ -1,6 +1,5 @@
-import {
-    postJSON
-} from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.4/api.js";
+// Import fungsi postJSON
+// import { postJSON } from 'https://cdn.jsdelivr.net/gh/jscroot/lib@0.2.0/api.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const registerButton = document.getElementById("registerButton");
@@ -25,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Cek nama unik di backend
         try {
-            const checkUrl = `https://asia-southeast2-pdfulbi.cloudfunctions.net/pdfmerger/pdfm/check-name?name=${encodeURIComponent(name)}`;
+            const checkUrl = `https://asia-southeast2-pdfulbi.cloudfunctions.net/pdfmerger/pdfm/get/users?name=${encodeURIComponent(name)}`;
             const checkResponse = await fetch(checkUrl);
 
             if (!checkResponse.ok) {
@@ -47,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
             };
 
             // URL endpoint backend
-            const target_url = "https://asia-southeast2-pdfulbi.cloudfunctions.net/pdfmerger/pdfm/users";
+            const target_url = "https://asia-southeast2-pdfulbi.cloudfunctions.net/pdfmerger/pdfm/register";
 
             // Tampilkan spinner loading (opsional)
             document.getElementById("loading-spinner").style.display = "block";
@@ -80,19 +79,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
+    // Select elements
     const passwordInput = document.getElementById('password');
-    const togglePassword = document.getElementById('togglePassword');
-    const eyeIcon = document.getElementById('eyeIcon');
+    const togglePasswordButton = document.getElementById('togglePassword');
+    const toggleIcon = togglePasswordButton.querySelector('i');
 
-    // Toggle password visibility
-    togglePassword.addEventListener('click', function () {
-        const isPassword = passwordInput.getAttribute('type') === 'password';
-        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+    // Add event listener to the toggle button
+    togglePasswordButton.addEventListener('click', () => {
+        // Check current state
+        const isPasswordVisible = passwordInput.type === 'text';
 
-        // Ganti ikon mata
-        eyeIcon.innerHTML = isPassword
-            ? '<line x1="1" y1="1" x2="23" y2="23"></line><path d="M17.94 17.94C16.64 18.85 15 19 12 19s-4.64-.15-5.94-1.06"></path>'
-            : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+        // Toggle password visibility
+        passwordInput.type = isPasswordVisible ? 'password' : 'text';
+
+        // Toggle the icon
+        toggleIcon.classList.toggle('fa-eye', !isPasswordVisible);
+        toggleIcon.classList.toggle('fa-eye-slash', isPasswordVisible);
     });
 });
