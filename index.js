@@ -11,14 +11,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Validasi sederhana
         if (!name || !email || !password) {
-            alert("Silakan isi semua kolom.");
+            Swal.fire({
+                icon: "warning",
+                title: "Peringatan!",
+                text: "Silakan isi semua kolom.",
+                confirmButtonText: "OK"
+            });
             return;
         }
 
         // Cek format email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            alert("Email tidak valid.");
+            Swal.fire({
+                icon: "error",
+                title: "Email Tidak Valid!",
+                text: "Harap masukkan email yang benar.",
+                confirmButtonText: "OK"
+            });
             return;
         }
 
@@ -45,22 +55,41 @@ document.addEventListener("DOMContentLoaded", function () {
             // Periksa status respons
             if (response.ok) {
                 const result = await response.json();
-                alert(result.message || "Registrasi berhasil!");
 
-                // Reset form setelah sukses
-                document.getElementById("name").value = "";
-                document.getElementById("email").value = "";
-                document.getElementById("password").value = "";
+                // Notifikasi sukses dengan redirect otomatis
+                Swal.fire({
+                    icon: "success",
+                    title: "Registrasi Berhasil!",
+                    text: result.message || "Anda akan diarahkan ke halaman login.",
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Reset form setelah sukses
+                    document.getElementById("name").value = "";
+                    document.getElementById("email").value = "";
+                    document.getElementById("password").value = "";
 
-                // Redirect ke halaman login
-                window.location.href = "https://pdfmulbi.github.io/login";
+                    // Redirect ke halaman login
+                    window.location.href = "https://pdfmulbi.github.io/login";
+                });
+
             } else {
                 const errorData = await response.json();
-                alert(errorData.message || "Gagal melakukan registrasi. Silakan coba lagi.");
+                Swal.fire({
+                    icon: "error",
+                    title: "Registrasi Gagal!",
+                    text: errorData.message || "Silakan coba lagi.",
+                    confirmButtonText: "OK"
+                });
             }
         } catch (error) {
             console.error("Error during registration:", error);
-            alert("Terjadi kesalahan saat melakukan registrasi. Silakan coba lagi.");
+            Swal.fire({
+                icon: "error",
+                title: "Terjadi Kesalahan!",
+                text: "Silakan coba lagi nanti.",
+                confirmButtonText: "OK"
+            });
         }
     });
 
